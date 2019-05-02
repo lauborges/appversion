@@ -13,9 +13,9 @@ const JSON_FILE = 'appversion.json'
  * Sync version.
  * @return {Object} [appversion object]
  */
-function getAppVersionSync () {
+function getAppVersionSync (customDirectory) {
   try {
-    let obj = require(join(directory, JSON_FILE))
+    let obj = require(join(customDirectory || directory, JSON_FILE))
     delete obj.config
     return obj
   } catch (err) {
@@ -29,9 +29,9 @@ function getAppVersionSync () {
  * @param  {Function} callback [callback]
  * @return {Object} [appversion object]
  */
-function getAppVersion (callback) {
+function getAppVersion (customDirectory, callback) {
   if (!check('Function', callback)) throw new Error('getAppVersion() -> callback is not a function')
-  fs.readFile(join(directory, JSON_FILE), (err, data) => {
+  fs.readFile(join(customDirectory || directory, JSON_FILE), (err, data) => {
     data = JSON.parse(data)
     if (data) delete data.config
     callback(err, data)
@@ -43,10 +43,10 @@ function getAppVersion (callback) {
  * Sync version.
  * @return {String} [appversion string]
  */
-function composePatternSync (pattern) {
+function composePatternSync (customDirectory, pattern) {
   if (!check('String', pattern)) throw new Error('composePatternSync() -> pattern is not a string')
   pattern = pattern.split('')
-  let obj = getAppVersionSync()
+  let obj = getAppVersionSync(customDirectory)
   let ptt = ''
   pattern.map((ele) => {
     ptt += switchPattern(obj, ele)
@@ -60,11 +60,11 @@ function composePatternSync (pattern) {
  * @param  {Function} callback [callback]
  * @return {String} [appversion string]
  */
-function composePattern (pattern, callback) {
+function composePattern (customDirectory, pattern, callback) {
   if (!check('String', pattern)) throw new Error('composePattern() -> pattern is not a string')
   if (!check('Function', callback)) throw new Error('composePattern() -> callback is not a function')
   pattern = pattern.split('')
-  getAppVersion((err, obj) => {
+  getAppVersion(customDirectory, (err, obj) => {
     if (err) console.log(err)
     let ptt = ''
     pattern.map((ele) => {
